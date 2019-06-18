@@ -1,0 +1,32 @@
+#codenumber {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 85vh;
+    text-align: center;
+    font-weight: bold;
+    line-height: 100vh;
+    height: 100vh;
+    flex: 1;
+}
+
+.message {
+    font-size: 100px !important;
+    font-weight: normal !important;
+    line-height: 50vh !important;
+    font-weight: bold !important;
+}
+.ready {
+    color: #FFF !important;
+    background: #090 !important;
+}
+.error {
+    color: #FFF !important;
+    background: #F00 !important;
+}
+.invert {
+    color: #FFF !important;
+    background: #000 !important;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
