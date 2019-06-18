@@ -1,4 +1,23 @@
 $(function () {
+
+  function randNumber() {
+    return function () {
+      var randN = Math.floor(Math.random() * 999);
+      $('#codenumber').html(randN);
+    }
+  }
+
+  function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+  }
+  
   const nums = shuffle(codeList)
   var randInterval, blinkInterval, down = false, lock = true
 
@@ -39,21 +58,3 @@ $(function () {
 
   $('#codenumber').html('Press Enter. <br>To Begin.').addClass('message')
 })
-
-function randNumber() {
-  return function () {
-    var randN = Math.floor(Math.random() * 999);
-    $('#codenumber').html(randN);
-  }
-}
-
-function shuffle(a) {
-  var j, x, i;
-  for (i = a.length - 1; i > 0; i--) {
-      j = Math.floor(Math.random() * (i + 1));
-      x = a[i];
-      a[i] = a[j];
-      a[j] = x;
-  }
-  return a;
-}
