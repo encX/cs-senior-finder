@@ -23,7 +23,8 @@ window.onload = function () {
         getRandomizer() {
             return () => {
                 const randN = Math.floor(Math.random() * 999);
-                this.setState(() => ({ displayText: randN }))
+                const displayText = this.state.itemList[randN % this.state.itemList.length]
+                this.setState(() => ({ displayText }))
             }
         }
 
