@@ -5,23 +5,28 @@ window.onload = function () {
             this.randInterval = null
             this.blinkInterval = null
             this.state = {
-                down: false,
-                lock: false,
-                nums: [1,2,3,4],
+                randomizerState: 'initial',
+                itemList: [],
                 elementClasses: ['message'],
-                displayText: 'Press Enter.\nTo Begin.'
+                displayText: 'Press Enter to Begin\nPress E to Edit List'
             }
         }
 
-        randNumber() {
+        readListFromStorage() {
+            const raw = localStorage.getItem('itemList') || ""
+            const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
+            this.setState({ itemList })
+        }
+
+        getRandomizer() {
             return () => {
                 const randN = Math.floor(Math.random() * 999);
-                this.setState(state => ({ displayText: randN }))
+                this.setState(() => ({ displayText: randN }))
             }
         }
 
         shuffle(a) {
-            var j, x, i;
+            let j, x, i;
             for (i = a.length - 1; i > 0; i--) {
                 j = Math.floor(Math.random() * (i + 1));
                 x = a[i];
@@ -31,56 +36,91 @@ window.onload = function () {
             return a;
         }
 
+        randomizeDisplay() {
+            this.setState(state => ({
+                elementClasses: state.elementClasses.filter(c => !/(message|ready|error)/ig.test(c)),
+                randomizerState: "randomizing",
+                displayText: ''
+            }))
+            this.randInterval = setInterval(this.getRandomizer(), 20)
+        }
+
+        setEmptyMessage() {
+            this.setState(() => ({
+                randomizerState: "empty",
+                displayText: 'List is empty.\nPress Enter or Reload.',
+                elementClasses: ["message", "error"]
+            }))
+        }
+
+        setReady() {
+            this.setState(() => ({
+                randomizerState: "ready",
+                displayText: "Ready\nPress Spacebar",
+                elementClasses: ["message", "ready"]
+            }))
+        }
+
+        getInvertToggler() {
+            return () => {
+                this.setState(state => ({
+                    elementClasses: state.elementClasses.indexOf('invert') > -1
+                        ? state.elementClasses.filter(c => c !== 'invert')
+                        : state.elementClasses.concat('invert')
+                }))
+            }
+        }
+
+        pickNumberAndSetDisplay() {
+            this.setState(state => ({
+                displayText: state.itemList.shift(),
+                itemList: state.itemList
+            }))
+        }
+
+        editList() {
+            const input = prompt("Enter list of values separated by comma (,)", localStorage.getItem('itemList'));
+            if (input) {
+                const inputList = input.split(",").map(x => x.trim()).filter(x => x !== "")
+                localStorage.setItem('itemList', inputList.join(","))
+
+                this.setState(() => ({ itemList: this.shuffle(inputList) }))
+            }
+        }
+
+        begin() {
+            clearInterval(this.blinkInterval)
+            if (this.state.itemList.length === 0) this.setEmptyMessage()
+            else this.setReady()
+        }
+
         componentDidMount() {
+            this.readListFromStorage()
+
             window.addEventListener("keydown", (e) => {
-                if (e.keyCode === 32 && !this.state.down && !this.state.lock && this.state.nums.length > 0) {
-                    this.setState(state => ({
-                        elementClasses: state.elementClasses.filter(c => !/(message|ready|error)/ig.test(c)),
-                        down: true,
-                        displayText: ''
-                    }))
-                    this.randInterval = setInterval(this.randNumber(), 20)
-                }
-                else if (e.keyCode === 13) {
-                    clearInterval(this.blinkInterval)
-                    if (this.state.nums.length === 0) {
-                        this.setState(state => ({
-                            displayText: 'Code is empty.\nReload to continue.',
-                            elementClasses: state.elementClasses.concat("message", "error")
-                        }))
-                        return false
+                if (this.state.randomizerState === "ready") {
+                    if (e.code === "Space") this.randomizeDisplay()
+                } else if (this.state.randomizerState === "displaying") {
+                    if (e.code === "Enter") this.begin()
+                } else if (this.state.randomizerState === "initial") {
+                    if (e.code === "Enter") this.begin()
+                    else if (e.code === "KeyE") this.editList()
+                } else if (this.state.randomizerState === "empty") {
+                    if (e.code === "Enter") {
+                        this.readListFromStorage()
+                        this.begin()
                     }
-                    else {
-                        this.setState(state => ({
-                            lock: false,
-                            displayText: "Ready\nPress Spacebar",
-                            elementClasses: state.elementClasses.concat("message", "ready").filter(c => c !== "invert")
-                        }))
-                    }
-                }
-                else {
-                    return false
                 }
             })
 
             window.addEventListener("keyup", (e) => {
-                if (!this.state.down || this.state.nums.length === 0) return false
+                if (this.state.randomizerState !== "randomizing" || this.state.itemList.length === 0) return false
 
-                if (e.keyCode === 32) {
-                    this.setState(() => ({ down: false, lock: true }))
+                if (e.code === "Space") {
+                    this.setState(() => ({ randomizerState: "displaying" }))
                     clearInterval(this.randInterval)
-                    this.blinkInterval = setInterval(() => {
-                        this.setState(state => ({
-                            elementClasses: state.elementClasses.indexOf('invert') > -1
-                                ? state.elementClasses.filter(c => c !== 'invert')
-                                : state.elementClasses.concat('invert')
-                        }))
-                    }, 500)
-
-                    this.setState(state => ({
-                        displayText: state.nums.shift(),
-                        nums: state.nums
-                    }))
+                    this.pickNumberAndSetDisplay()
+                    this.blinkInterval = setInterval(this.getInvertToggler(), 500)
                 }
             })
         }
