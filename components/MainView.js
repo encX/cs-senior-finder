@@ -1,7 +1,7 @@
 window.onload = function () {
     class MainView extends React.Component {
-        constructor() {
-            super()
+        constructor(props) {
+            super(props)
             this.randInterval = null
             this.blinkInterval = null
             this.state = {
@@ -13,6 +13,8 @@ window.onload = function () {
         }
 
         readListFromStorage() {
+            if (props.noCookieMode) return;
+            
             const raw = localStorage.getItem('itemList') || ""
             const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
             this.setState({ itemList })
@@ -79,10 +81,10 @@ window.onload = function () {
         }
 
         editList() {
-            const input = prompt("Enter list of values separated by comma (,)", localStorage.getItem('itemList'));
+            const input = prompt("Enter list of values separated by comma (,)", props.noCookieMode ? null : localStorage.getItem('itemList'));
             if (input) {
                 const inputList = input.split(",").map(x => x.trim()).filter(x => x !== "")
-                localStorage.setItem('itemList', inputList.join(","))
+                if (!props.noCookieMode) localStorage.setItem('itemList', inputList.join(","))
 
                 this.setState(() => ({ itemList: this.shuffle(inputList) }))
             }
@@ -134,8 +136,18 @@ window.onload = function () {
         }
     }
 
+    let noCookieMode = false;
+    try {
+        localStorage.getItem('itemList')
+    } catch (e) {
+        console.warn("Browser doesn't support localStore or cookie is blocked.")
+        noCookieMode = true;
+    } finally {
+        console.log("Using" + noCookieMode ? "no" : "" + "cookie mode");
+    }
+
     ReactDOM.render(
-        React.createElement(MainView),
+        React.createElement(MainView, { noCookieMode }),
         document.getElementById('MainView')
     );
 }
