@@ -13,7 +13,7 @@ window.onload = function () {
         }
 
         readListFromStorage() {
-            if (props.noCookieMode) return;
+            if (this.props.noCookieMode) return;
             
             const raw = localStorage.getItem('itemList') || ""
             const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
@@ -81,10 +81,10 @@ window.onload = function () {
         }
 
         editList() {
-            const input = prompt("Enter list of values separated by comma (,)", props.noCookieMode ? null : localStorage.getItem('itemList'));
+            const input = prompt("Enter list of values separated by comma (,)", this.props.noCookieMode ? null : localStorage.getItem('itemList'));
             if (input) {
                 const inputList = input.split(",").map(x => x.trim()).filter(x => x !== "")
-                if (!props.noCookieMode) localStorage.setItem('itemList', inputList.join(","))
+                if (!this.props.noCookieMode) localStorage.setItem('itemList', inputList.join(","))
 
                 this.setState(() => ({ itemList: this.shuffle(inputList) }))
             }
