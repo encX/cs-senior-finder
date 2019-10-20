@@ -44,4 +44,4 @@ $ git clone <repo_path>
 There you go, ready to run, just launch `index.html` in any modern browser.
 
 ## License
-This project is MIT Licensed.
+This project is [MIT Licensed](https://github.com/encX/cs-senior-finder/blob/master/LICENSE).
