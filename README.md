@@ -22,7 +22,7 @@ On the start screen. You can...
 - press `enter` to start the app.
 
 After that, the list will be pre-randomized and green screen will show up.
-- press `Spacebar` to display random numbers from 0-999, if the `Spacebar` is released, the random display will stop and the first from the list will show up on the screen and remove from to list.
+- press `Spacebar` to display random numbers from the list, if the `Spacebar` is released, the random display will stop and the first from the list will show up on the screen and remove from the list.
 - To continue to next round of randomization, press `enter`
 
 Until the list is depleted, the red screen with show up. You can either...
