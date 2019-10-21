@@ -7,14 +7,18 @@ window.onload = function () {
             this.state = {
                 randomizerState: 'initial',
                 itemList: [],
+                initialItemList: [],
                 elementClasses: ['message'],
                 displayText: 'Press Enter to Begin\nPress E to Edit List'
             }
         }
 
         readListFromStorage() {
-            if (this.props.noCookieMode) return;
-            
+
+            if (this.props.noCookieMode) {
+                this.setState({ itemList: [...this.state.initialItemList] });
+                return;
+            }
             const raw = localStorage.getItem('itemList') || ""
             const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
             this.setState({ itemList })
@@ -51,7 +55,7 @@ window.onload = function () {
         setEmptyMessage() {
             this.setState(() => ({
                 randomizerState: "empty",
-                displayText: 'List is empty.\nPress Enter or Reload.',
+                displayText: 'List is empty.\nPress Enter.',
                 elementClasses: ["message", "error"]
             }))
         }
@@ -82,12 +86,20 @@ window.onload = function () {
         }
 
         editList() {
-            const input = prompt("Enter list of values separated by comma (,)", this.props.noCookieMode ? null : localStorage.getItem('itemList'));
+            const restoredItemList = this.props.noCookieMode
+                ? this.state.initialItemList.join(',')
+                : localStorage.getItem('itemList');
+            const input = prompt("Enter list of values separated by comma (,)", restoredItemList);
             if (input) {
                 const inputList = input.split(",").map(x => x.trim()).filter(x => x !== "")
-                if (!this.props.noCookieMode) localStorage.setItem('itemList', inputList.join(","))
-
-                this.setState(() => ({ itemList: this.shuffle(inputList) }))
+                if (!this.props.noCookieMode) {
+                    localStorage.setItem('itemList', inputList.join(","))
+                }
+                const itemList = this.shuffle(inputList);
+                this.setState(() => ({
+                    itemList,
+                    initialItemList: [...itemList],
+                }))
             }
         }
 
