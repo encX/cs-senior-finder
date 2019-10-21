@@ -8,7 +8,7 @@ window.onload = function () {
                 randomizerState: 'initial',
                 itemList: [],
                 elementClasses: ['message'],
-                displayText: 'Press Enter to Begin\nPress E to Edit List'
+                displayText: 'Press Enter to Begin\nPress E to Edit List (0)'
             }
         }
 
@@ -17,7 +17,7 @@ window.onload = function () {
             
             const raw = localStorage.getItem('itemList') || ""
             const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
-            this.setState({ itemList })
+            this.setState({ itemList, displayText: `Press Enter to Begin\nPress E to Edit List (${itemList.length || 0})` })
         }
 
         getRandomizer() {
@@ -89,6 +89,7 @@ window.onload = function () {
 
                 this.setState(() => ({ itemList: this.shuffle(inputList) }))
             }
+            this.setState({ displayText: `Press Enter to Begin\nPress E to Edit List (${this.state.itemList.length || 0})` })
         }
 
         begin() {
