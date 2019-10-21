@@ -1,47 +1,47 @@
 # CS Senior Randomizer
-TL;DR : This is the list randomizer where you can ...
-1. press `e` to set the list of text
-2. press `enter` key to start the app
-3. long press `spacebar` until you're satisfied and you'll get one item from the list you set displayed in a gigantic font, and that item will no longer in the list.
-4. after that, press `enter` to start next turn (go back to 3.), repeat until the list is depleted.
+TL;DR : This is a list randomizer where you can:
+1. Press `e` to set a list of text entries.
+2. Press `enter` to start the app.
+3. Hold `spacebar` to cycle between entries until you're satisfied. The entry you stop at will be displayed in a gigantic font, and will be erased from the list on the next turn.
+4. Press `enter` after that to start the next turn (going back to step 3). Repeat until the list is depleted.
 
 This project is being deployed to [Github pages](https://encx.github.io/cs-senior-finder/).
 
 ## The "Making of" Story
-Back in my university days. There is a culture in my department _(Computer Science (that's why CS in the repo name))_ where, every year, the freshmen who wanted to have their senior and seniors that wanted to have their descendant(s) will join the activity called "Picking the Code". Where the seniors are assigned to a unique number and the freshmen will have to do some mission to get a change to pick their senior.
+Back in my university days, there was a culture in my department _(Computer Science (that's what the "CS" in the repo name stands for))_. Every year, the freshmen who wanted to pick their senior, and seniors that wanted to pick their descendant(s) would join in an activity called "Picking the Code". The seniors were assigned to a unique number and the freshmen would have to do some mission for a chance to get their senior.
 
-We normally did picking the simple way. Putting numbers on pieces of paper and put those in a jar, and let the freshmen pick them. But we're going to study for 4 years, right ? Why don't we do this activity more "Computer Science" way ? Letting the freshmen see that the programming they gonna study for 4 years to come can be applied to everywhere they want, and this is so easy and fun to do too!
+We normally did picking in a simple way: by writing numbers on pieces of paper, putting those in a jar and letting the freshmen pick them. But we're going to study for 4 years, right? So why not do this activity in a more "Computer Science" way? Letting the freshmen see some of the programming they're gonna study for 4 years being applied in anything they want. Also, this is easy and fun to do!
 
-So, there you go. I made this for all juniors at my uni, and for fun! If you just wandered around Github and found this repo, feel free to use it or if you found any problem with these scripts and wanted to help, don't hesitate to raise PRs or at least open an issue and I would be really thankful.
+So, there you go. I made this for all juniors at my uni, and for fun! If you just wandered around Github and found this repo, feel free to use it! Or if you found any problem with these scripts and wanted to help, don't hesitate to raise PRs or at least open an issue, I would be really thankful.
 
 ## How to use
-You can either clone the repo and use it anywhere or go to [Github pages](https://encx.github.io/cs-senior-finder/).
+You can either clone this repository and use it anywhere or go to [Github pages](https://encx.github.io/cs-senior-finder/).
 
-On the start screen. You can...
-- press `e` to edit the list of values. (Put the comma-separated-value in the field and hit OK).
-- press `enter` to start the app.
+Once the program is running, on the start screen you can:
+- Press `e` to edit the list of values (type in comma-separated values in the field and hit OK).
+- Press `enter` to start the app.
 
-After that, the list will be pre-randomized and green screen will show up.
-- press `Spacebar` to display random numbers from the list, if the `Spacebar` is released, the random display will stop and the first from the list will show up on the screen and remove from the list.
-- To continue to next round of randomization, press `enter`
+After that, the list will be pre-randomized and a green screen will show up.
+- Hold `spacebar` to display random numbers from the list. When `spacebar` is released, the randomizing will stop and the selected item from the list will show up on the screen, and be removed from the list.
+- To continue to the next round of randomization, press `enter`.
 
-Until the list is depleted, the red screen with show up. You can either...
+When the list is depleted, a red screen with show up. You can either:
 - Reload the page or
-- Just hit `enter`
+- Just hit `enter`.
 
-This app use cookie for storing the item list data locally. This helps when the list is depleted, reloading the page will restore data from local storage and you don't have to put in the list again.
+This app use cookies for storing the item list data locally. This helps when the list is depleted: reloading the page will restore the data from local storage and you don't have to recreate the list.
 
 ## Contributing
-I know, this is not the best practice making web app. But, I really wanted to keep these scripts simple. So, consider these.
+While I know this is not the best practice for making web apps, I really wanted to keep these scripts simple. So, consider these:
 - No building, bundling, etc.
 - Try to use the most out of vanilla JavaScript while maintaining code readability.
-	- of course, we're not going to do the `document.getElementById('elem-id')` or `element.innerHtml = '1234'`. So using the external library is fine.
+	- Of course, we're not going to do `document.getElementById('elem-id')` or `element.innerHtml = '1234'`. So using the external library is fine.
 
 ### Setup
 ```sh
 $ git clone <repo_path>
 ```
-There you go, ready to run, just launch `index.html` in any modern browser.
+There you go, ready to run. Just launch `index.html` in any modern browser.
 
 ## License
 This project is [MIT Licensed](https://github.com/encX/cs-senior-finder/blob/master/LICENSE).
