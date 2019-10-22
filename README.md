@@ -5,12 +5,12 @@ TL;DR : This is the list randomizer where you can ...
 3. long press `spacebar` until you're satisfied and you'll get one item from the list you set displayed in a gigantic font, and that item will no longer in the list.
 4. after that, press `enter` to start next turn (go back to 3.), repeat until the list is depleted.
 
-This project is being deployed to [Github pages](https://encx.github.io/cs-senior-finder/).
+This project is deployed on [Github pages](https://encx.github.io/cs-senior-finder/).
 
 ## The "Making of" Story
-Back in my university days. There is a culture in my department _(Computer Science (that's why CS in the repo name))_ where, every year, the freshmen who wanted to have their senior and seniors that wanted to have their descendant(s) will join the activity called "Picking the Code". Where the seniors are assigned to a unique number and the freshmen will have to do some mission to get a change to pick their senior.
+Back in my university days, there was a culture in my department _(Computer Science (that's why CS in the repo name))_ where, every year, the freshmen who wanted to have their senior and seniors that wanted to have their descendant(s), will join the activity called "Picking the Code". Seniors are assigned to a unique number and the freshmen will have to do some mission to get a chance to pick their senior.
 
-We normally did picking the simple way. Putting numbers on pieces of paper and put those in a jar, and let the freshmen pick them. But we're going to study for 4 years, right ? Why don't we do this activity more "Computer Science" way ? Letting the freshmen see that the programming they gonna study for 4 years to come can be applied to everywhere they want, and this is so easy and fun to do too!
+We normally did picking the simple way. Putting numbers on pieces of paper and put those in a jar, and let the freshmen pick them. But we're going to study for 4 years, right ? Why don't we do this activity more "Computer Science" way ? Letting the freshmen see that the programming they are going to study for the coming 4 years can be applied anywhere they want, and this is so easy and fun to do too!
 
 So, there you go. I made this for all juniors at my uni, and for fun! If you just wandered around Github and found this repo, feel free to use it or if you found any problem with these scripts and wanted to help, don't hesitate to raise PRs or at least open an issue and I would be really thankful.
 
