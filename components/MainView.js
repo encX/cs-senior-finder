@@ -1,5 +1,11 @@
 window.onload = function () {
 
+    const STATE_INITIAL     = 'initial';
+    const STATE_EMPTY       = 'empty';
+    const STATE_READY       = 'ready';
+    const STATE_RANDOMIZING = 'randomizing';
+    const STATE_DISPLAYING  = 'displaying';
+
     const sanitizeData = (input) =>
         input.split(",").map(x => x.trim()).filter(x => x !== "");
 
@@ -9,7 +15,7 @@ window.onload = function () {
             this.randInterval = null
             this.blinkInterval = null
             this.state = {
-                randomizerState: 'initial',
+                randomizerState: STATE_INITIAL,
                 itemList: [],
                 initialItemList: [],
                 elementClasses: ['message'],
@@ -49,7 +55,7 @@ window.onload = function () {
         randomizeDisplay() {
             this.setState(state => ({
                 elementClasses: state.elementClasses.filter(c => !/(message|ready|error)/ig.test(c)),
-                randomizerState: "randomizing",
+                randomizerState: STATE_RANDOMIZING,
                 displayText: ''
             }))
             this.randInterval = setInterval(this.getRandomizer(), 20)
@@ -57,7 +63,7 @@ window.onload = function () {
 
         setEmptyMessage() {
             this.setState(() => ({
-                randomizerState: "empty",
+                randomizerState: STATE_EMPTY,
                 displayText: 'List is empty.\nPress Enter.',
                 elementClasses: ["message", "error"]
             }))
@@ -65,7 +71,7 @@ window.onload = function () {
 
         setReady() {
             this.setState(() => ({
-                randomizerState: "ready",
+                randomizerState: STATE_READY,
                 displayText: "Ready\nPress Spacebar",
                 elementClasses: ["message", "ready"]
             }))
@@ -117,14 +123,15 @@ window.onload = function () {
             this.readListFromStorage()
 
             window.addEventListener("keydown", (e) => {
-                if (this.state.randomizerState === "ready") {
+                const { randomizerState } = this.state;
+                if (randomizerState === STATE_READY) {
                     if (e.code === "Space") this.randomizeDisplay()
-                } else if (this.state.randomizerState === "displaying") {
+                } else if (randomizerState === STATE_DISPLAYING) {
                     if (e.code === "Enter") this.begin()
-                } else if (this.state.randomizerState === "initial") {
+                } else if (randomizerState === STATE_INITIAL) {
                     if (e.code === "Enter") this.begin()
                     else if (e.code === "KeyE") this.editList()
-                } else if (this.state.randomizerState === "empty") {
+                } else if (randomizerState === STATE_EMPTY) {
                     if (e.code === "Enter") {
                         this.readListFromStorage()
                         this.begin()
@@ -133,10 +140,10 @@ window.onload = function () {
             })
 
             window.addEventListener("keyup", (e) => {
-                if (this.state.randomizerState !== "randomizing" || this.state.itemList.length === 0) return false
+                if (this.state.randomizerState !== STATE_RANDOMIZING || this.state.itemList.length === 0) return false
 
                 if (e.code === "Space") {
-                    this.setState(() => ({ randomizerState: "displaying" }))
+                    this.setState({ randomizerState: STATE_DISPLAYING })
                     clearInterval(this.randInterval)
                     this.pickNumberAndSetDisplay()
                     this.blinkInterval = setInterval(this.getInvertToggler(), 500)
