@@ -1,4 +1,8 @@
 window.onload = function () {
+
+    const sanitizeData = (input) =>
+        input.split(",").map(x => x.trim()).filter(x => x !== "");
+
     class MainView extends React.Component {
         constructor(props) {
             super(props)
@@ -14,13 +18,12 @@ window.onload = function () {
         }
 
         readListFromStorage() {
-
             if (this.props.noCookieMode) {
                 this.setState({ itemList: [...this.state.initialItemList] });
                 return;
             }
             const raw = localStorage.getItem('itemList') || ""
-            const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
+            const itemList = this.shuffle(sanitizeData(raw));
             this.setState({ itemList, displayText: `Press Enter to Begin\nPress E to Edit List (${itemList.length})` })
         }
 
@@ -91,7 +94,7 @@ window.onload = function () {
                 : localStorage.getItem('itemList');
             const input = prompt("Enter list of values separated by comma (,)", restoredItemList);
             if (input) {
-                const inputList = input.split(",").map(x => x.trim()).filter(x => x !== "")
+                const inputList = sanitizeData(input);
                 if (!this.props.noCookieMode) {
                     localStorage.setItem('itemList', inputList.join(","))
                 }
