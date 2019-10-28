@@ -1,11 +1,21 @@
 window.onload = function () {
+
+    const STATE_INITIAL     = 'initial';
+    const STATE_EMPTY       = 'empty';
+    const STATE_READY       = 'ready';
+    const STATE_RANDOMIZING = 'randomizing';
+    const STATE_DISPLAYING  = 'displaying';
+
+    const sanitizeData = (input) =>
+        input.split(",").map(x => x.trim()).filter(x => x !== "");
+
     class MainView extends React.Component {
         constructor(props) {
             super(props)
             this.randInterval = null
             this.blinkInterval = null
             this.state = {
-                randomizerState: 'initial',
+                randomizerState: STATE_INITIAL,
                 itemList: [],
                 initialItemList: [],
                 elementClasses: ['message'],
@@ -13,15 +23,17 @@ window.onload = function () {
             }
         }
 
-        readListFromStorage() {
+        initList(itemList) {
+            this.setState({
+                itemList: this.shuffle([...itemList]),
+                initialItemList: itemList,
+                displayText: `Press Enter to Begin\nPress E to Edit List (${itemList.length})`,
+             });
+        }
 
-            if (this.props.noCookieMode) {
-                this.setState({ itemList: [...this.state.initialItemList] });
-                return;
-            }
-            const raw = localStorage.getItem('itemList') || ""
-            const itemList = this.shuffle(raw.split(",").map(x => x.trim()).filter(x => x !== ""))
-            this.setState({ itemList, displayText: `Press Enter to Begin\nPress E to Edit List (${itemList.length})` })
+        loadList() {
+            const itemList = sanitizeData(this.props.onLoad());
+            this.initList(itemList);
         }
 
         getRandomizer() {
@@ -46,7 +58,7 @@ window.onload = function () {
         randomizeDisplay() {
             this.setState(state => ({
                 elementClasses: state.elementClasses.filter(c => !/(message|ready|error)/ig.test(c)),
-                randomizerState: "randomizing",
+                randomizerState: STATE_RANDOMIZING,
                 displayText: ''
             }))
             this.randInterval = setInterval(this.getRandomizer(), 20)
@@ -54,7 +66,7 @@ window.onload = function () {
 
         setEmptyMessage() {
             this.setState(() => ({
-                randomizerState: "empty",
+                randomizerState: STATE_EMPTY,
                 displayText: 'List is empty.\nPress Enter.',
                 elementClasses: ["message", "error"]
             }))
@@ -62,7 +74,7 @@ window.onload = function () {
 
         setReady() {
             this.setState(() => ({
-                randomizerState: "ready",
+                randomizerState: STATE_READY,
                 displayText: "Ready\nPress Spacebar",
                 elementClasses: ["message", "ready"]
             }))
@@ -86,22 +98,13 @@ window.onload = function () {
         }
 
         editList() {
-            const restoredItemList = this.props.noCookieMode
-                ? this.state.initialItemList.join(',')
-                : localStorage.getItem('itemList');
+            const restoredItemList = this.state.initialItemList.join(',');
             const input = prompt("Enter list of values separated by comma (,)", restoredItemList);
             if (input) {
-                const inputList = input.split(",").map(x => x.trim()).filter(x => x !== "")
-                if (!this.props.noCookieMode) {
-                    localStorage.setItem('itemList', inputList.join(","))
-                }
-                const itemList = this.shuffle(inputList);
-                this.setState(() => ({
-                    itemList,
-                    initialItemList: [...itemList],
-                }))
+                const inputList = sanitizeData(input);
+                this.props.onSave(inputList.join(","));
+                this.initList(inputList);
             }
-            this.setState({ displayText: `Press Enter to Begin\nPress E to Edit List (${this.state.itemList.length})` })
         }
 
         begin() {
@@ -111,29 +114,30 @@ window.onload = function () {
         }
 
         componentDidMount() {
-            this.readListFromStorage()
+            this.loadList();
 
             window.addEventListener("keydown", (e) => {
-                if (this.state.randomizerState === "ready") {
+                const { randomizerState } = this.state;
+                if (randomizerState === STATE_READY) {
                     if (e.code === "Space") this.randomizeDisplay()
-                } else if (this.state.randomizerState === "displaying") {
+                } else if (randomizerState === STATE_DISPLAYING) {
                     if (e.code === "Enter") this.begin()
-                } else if (this.state.randomizerState === "initial") {
+                } else if (randomizerState === STATE_INITIAL) {
                     if (e.code === "Enter") this.begin()
                     else if (e.code === "KeyE") this.editList()
-                } else if (this.state.randomizerState === "empty") {
+                } else if (randomizerState === STATE_EMPTY) {
                     if (e.code === "Enter") {
-                        this.readListFromStorage()
-                        this.begin()
+                        this.initList(this.state.initialItemList);
+                        this.begin();
                     }
                 }
             })
 
             window.addEventListener("keyup", (e) => {
-                if (this.state.randomizerState !== "randomizing" || this.state.itemList.length === 0) return false
+                if (this.state.randomizerState !== STATE_RANDOMIZING || this.state.itemList.length === 0) return false
 
                 if (e.code === "Space") {
-                    this.setState(() => ({ randomizerState: "displaying" }))
+                    this.setState({ randomizerState: STATE_DISPLAYING })
                     clearInterval(this.randInterval)
                     this.pickNumberAndSetDisplay()
                     this.blinkInterval = setInterval(this.getInvertToggler(), 500)
@@ -150,18 +154,22 @@ window.onload = function () {
         }
     }
 
-    let noCookieMode = false;
+    // Use localStorage
+    let onSave = (str) => localStorage.setItem('itemList', str);
+    let onLoad = () => localStorage.getItem('itemList') || '';
+
     try {
-        localStorage.getItem('itemList')
+        onLoad();
     } catch (e) {
-        console.warn("Browser doesn't support localStore or cookie is blocked.")
-        noCookieMode = true;
-    } finally {
-        console.log("Using" + noCookieMode ? "no" : "" + "cookie mode");
+        console.warn("Browser doesn't support localStore or cookie is blocked.");
+
+        // Use location hash.
+        onSave = (str) => location = '#' + encodeURIComponent(str);
+        onLoad = () =>  decodeURIComponent(location.hash.substr(1));
     }
 
     ReactDOM.render(
-        React.createElement(MainView, { noCookieMode }),
+        React.createElement(MainView, { onLoad, onSave }),
         document.getElementById('MainView')
     );
 }
