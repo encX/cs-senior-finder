@@ -23,14 +23,17 @@ window.onload = function () {
             }
         }
 
-        readListFromStorage() {
-            if (this.props.noCookieMode) {
-                this.setState({ itemList: [...this.state.initialItemList] });
-                return;
-            }
-            const raw = localStorage.getItem('itemList') || ""
-            const itemList = this.shuffle(sanitizeData(raw));
-            this.setState({ itemList, displayText: `Press Enter to Begin\nPress E to Edit List (${itemList.length})` })
+        initList(itemList) {
+            this.setState({
+                itemList: this.shuffle([...itemList]),
+                initialItemList: itemList,
+                displayText: `Press Enter to Begin\nPress E to Edit List (${itemList.length})`,
+             });
+        }
+
+        loadList() {
+            const itemList = sanitizeData(this.props.onLoad());
+            this.initList(itemList);
         }
 
         getRandomizer() {
@@ -95,22 +98,13 @@ window.onload = function () {
         }
 
         editList() {
-            const restoredItemList = this.props.noCookieMode
-                ? this.state.initialItemList.join(',')
-                : localStorage.getItem('itemList');
+            const restoredItemList = this.state.initialItemList.join(',');
             const input = prompt("Enter list of values separated by comma (,)", restoredItemList);
             if (input) {
                 const inputList = sanitizeData(input);
-                if (!this.props.noCookieMode) {
-                    localStorage.setItem('itemList', inputList.join(","))
-                }
-                const itemList = this.shuffle(inputList);
-                this.setState(() => ({
-                    itemList,
-                    initialItemList: [...itemList],
-                }))
+                this.props.onSave(inputList.join(","));
+                this.initList(inputList);
             }
-            this.setState({ displayText: `Press Enter to Begin\nPress E to Edit List (${this.state.itemList.length})` })
         }
 
         begin() {
@@ -120,7 +114,7 @@ window.onload = function () {
         }
 
         componentDidMount() {
-            this.readListFromStorage()
+            this.loadList();
 
             window.addEventListener("keydown", (e) => {
                 const { randomizerState } = this.state;
@@ -133,8 +127,8 @@ window.onload = function () {
                     else if (e.code === "KeyE") this.editList()
                 } else if (randomizerState === STATE_EMPTY) {
                     if (e.code === "Enter") {
-                        this.readListFromStorage()
-                        this.begin()
+                        this.initList(this.state.initialItemList);
+                        this.begin();
                     }
                 }
             })
@@ -160,18 +154,18 @@ window.onload = function () {
         }
     }
 
-    let noCookieMode = false;
+    let onSave = (str) => localStorage.setItem('itemList', str);
+    let onLoad = () => localStorage.getItem('itemList') || '';
     try {
-        localStorage.getItem('itemList')
+        onLoad();
     } catch (e) {
-        console.warn("Browser doesn't support localStore or cookie is blocked.")
-        noCookieMode = true;
-    } finally {
-        console.log("Using" + noCookieMode ? "no" : "" + "cookie mode");
+        console.warn("Browser doesn't support localStore or cookie is blocked.");
+        onSave = () => console.warn('No persistent storage.');
+        onLoad = () => '';
     }
 
     ReactDOM.render(
-        React.createElement(MainView, { noCookieMode }),
+        React.createElement(MainView, { onLoad, onSave }),
         document.getElementById('MainView')
     );
 }
