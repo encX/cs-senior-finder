@@ -154,14 +154,18 @@ window.onload = function () {
         }
     }
 
+    // Use localStorage
     let onSave = (str) => localStorage.setItem('itemList', str);
     let onLoad = () => localStorage.getItem('itemList') || '';
+
     try {
         onLoad();
     } catch (e) {
         console.warn("Browser doesn't support localStore or cookie is blocked.");
-        onSave = () => console.warn('No persistent storage.');
-        onLoad = () => '';
+
+        // Use location hash.
+        onSave = (str) => location = '#' + encodeURIComponent(str);
+        onLoad = () =>  decodeURIComponent(location.hash.substr(1));
     }
 
     ReactDOM.render(
